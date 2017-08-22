@@ -50,35 +50,46 @@ function check_syntax()
     fi
 }
 
-function write_normal_file()
+function write_mk_file()
 {
-	echo "write_normal_file"
+	echo "write_mk_file"
 }
 
-function write_update_file()
+function write_txt_file()
+{
+	echo "write_txt_file"
+}
+
+function write_kl_file()
+{
+	echo "write_kl_file"
+}
+
+function process_field_value()
 {
 	case $1 in
 	'dolphin_cantv_h2')
 		if [ -e $dolphin_cantv_h2_file ]; then
-			write_normal_file
+			write_mk_file
 		else
 			echo -e "\033[0;31;1m------$dolphin_cantv_h2_file not exist, error----\033[0m"
 		fi
 	;;
 	'external_product')
 		if [ -e $external_product_file ]; then
-			write_normal_file
+			write_txt_file
 		else
 			echo -e "\033[0;31;1m------$external_product_file not exist, error----\033[0m"
 		fi
 	;;
 	###'customer_ir_file')
+	#TODO write_kl_file
 	esac
 
 	return 0
 }
 
-function process_field_value()
+function update_sourcelist()
 {
 	#TODO while read line BEG ---->
 	#TODO 读配置文件，一行中的[]中的字段与var比较，如果有说明支持，则解析出 key 和 value
@@ -86,11 +97,11 @@ function process_field_value()
 		#if 支持且不是customer_ir
 		#将 key 和 value 设置到var对应的文件当中
 		if [ $var != 'customer_ir' ]; then
-			write_update_file $var $key $value
+			process_field_value $var $key $value
 		else
 			echo -e "\033[0;31;1m------${var}_file maybe not exist, creat----\033[0m"
 			#TODO 是customer_ir的情况，首先获取customer_code的直 如果不存在则创建customer_ir_$customer_code.kl文件=parsel_file，然后在重新解析key value且不包含customer_code
-			write_update_file $pasel_file $key $value 
+			process_field_value $pasel_file $key $value 
 		fi
 	done
 
@@ -99,15 +110,9 @@ function process_field_value()
     return 0
 }
 
-function set_sourcelist()
-{
-	process_field_value  $var
-
-	return 0
-}
 
 check_syntax $update_ref
 echo "check syntax status:$?"
 
-set_sourcelist $update_ref
+update_sourcelist $update_ref
 echo "set source status:$?"
