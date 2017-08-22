@@ -80,9 +80,8 @@ function write_update_file()
 
 function process_field_value()
 {
-	#读配置文件，一行中的[]中的字段与var比较，如果有说明支持，则解析出 key 和 value
-
-	#while read line
+	#TODO while read line BEG ---->
+	#TODO 读配置文件，一行中的[]中的字段与var比较，如果有说明支持，则解析出 key 和 value
 	for var in ${avalible_update_list[*]}; do
 		#if 支持且不是customer_ir
 		#将 key 和 value 设置到var对应的文件当中
@@ -95,6 +94,8 @@ function process_field_value()
 		fi
 	done
 
+	#TODO while read line  END <-----
+	
     return 0
 }
 
