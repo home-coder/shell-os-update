@@ -69,7 +69,7 @@ function process_field_value()
 
 function set_sourcelist()
 {
-		process_field_value  $var
+	process_field_value  $var
 
 	return 0
 }
