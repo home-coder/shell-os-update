@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #待解析的云更新配置文件清单
-update_ref="open_platform_demo.txt"
+update_ref="cantv_h2.ini"
 
 #本地支持更新资源文件列表，
 avalible_update_list=(
@@ -109,17 +109,17 @@ function process_field_value()
 function update_sourcelist()
 {
 	#TODO while read line BEG ---->
-	#TODO 读配置文件，一行中的[]中的字段与var比较，如果有说明支持，则解析出 key 和 value
-	for var in ${avalible_update_list[*]}; do
-		#if 支持且不是customer_ir 将 key 和 value 设置到var对应的文件当中
-		if [ $var != 'customer_ir' ]; then
-			process_field_value $var $key $value
-		else
-			echo -e "\033[0;31;1m------${var}_file maybe not exist, creat----\033[0m"
-			#TODO 是customer_ir的情况，首先获取customer_code的直 如果不存在则创建customer_ir_$customer_code.kl文件=parsel_file，然后在重新解析key value且不包含customer_code
-			process_field_value $pasel_file $key $value 
-		fi
-	done
+		#读配置文件，一行中的[]中的字段与var比较，如果有说明支持，则解析出 key 和 value
+		for var in ${avalible_update_list[*]}; do
+			#if 支持且不是customer_ir 将 key 和 value 设置到var对应的文件当中
+			if [ $var != 'customer_ir' ]; then
+				process_field_value $var $key $value
+			else
+				echo -e "\033[0;31;1m------${var}_file maybe not exist, creat----\033[0m"
+				#TODO 是customer_ir的情况，首先获取customer_code的直 如果不存在则创建customer_ir_$customer_code.kl文件=parsel_file，然后在重新解析key value且不包含customer_code
+				process_field_value $pasel_file $key $value 
+			fi
+		done
 
 	#TODO while read line  END <-----
 	
@@ -128,7 +128,10 @@ function update_sourcelist()
 
 #解析云配置清单的入口处
 check_manifest_syntax $update_ref
-echo "check syntax status:$?"
+if [ $? != 0 ]; then
+	echo -e "\033[0;31;1m------check syntax status:$?, error----\033[0m"
+	exit
+fi
 
 update_sourcelist $update_ref
 echo "set source status:$?"
