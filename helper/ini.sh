@@ -56,44 +56,40 @@ function check_syntax()
 function get_field_value()  
 {  
 		echo "-------------11"
-    if [ ! -f $1 ] || [ $# -ne 3 ];then 
+    if [ ! -f $1 ] || [ $# -ne 4 ];then 
         return 1  
     fi 
 blockname=$2 
 fieldname=$3 
  
 begin_block=0  
-end_block=0  
  
     cat $1 | while read line  
     do  
-      
-        if [ "X$line" = "X[$blockname]" ];then  
-            begin_block=1  
-            continue  
+        if [ "X$line" == "X[$blockname]" ];then
+			echo $line >> tmp
+			begin_block=1  
+            continue
+		else
+			if [ $begin_block -ne  1 ]; then
+			echo $line >> tmp
+			fi
         fi  
-          
+        
         if [ $begin_block -eq 1 ];then  
-            end_block=$(echo $line | awk 'BEGIN{ret=0} /^.*$/{ret=1} END{print ret}') 
-            if [ $end_block -eq 1 ];then 
-                #echo "end block"  
-                break  
-            fi  
-
-            need_ignore=$(echo $line | awk 'BEGIN{ret=0} /^#/{ret=1} /^$/{ret=1} END{print ret}')  
+            need_ignore=$(echo $line | awk 'BEGIN{ret=0} /^;/{ret=1} /^$/{ret=1} END{print ret}')  
             if [ $need_ignore -eq 1 ];then  
-                #echo "ignored line:" $line  
                 continue  
             fi  
             field=$(echo $line | awk -F= '{gsub(" |\t","",$1); print $1}')  
             value=$(echo $line | awk -F= '{gsub(" |\t","",$2); print $2}')  
-            #echo "'$field':'$value'"  
             if [ "X$fieldname" = "X$field" ];then     
-                #echo "result value:'$result'"  
-                echo $value  
-                break  
-            fi  
-              
+                echo $value 
+				mod_str="$fieldname   =  $4"
+				echo $mod_str >> tmp
+				begin_block=0
+				continue
+            fi 
         fi  
     done  
     return 0  
@@ -101,5 +97,5 @@ end_block=0
   
 check_syntax test.ini  
 echo "check syntax status:$?"  
-GLOBAL_FIELD_VALUE=$(get_field_value test.ini PostgreSQL Setup)  
+GLOBAL_FIELD_VALUE=$(get_field_value test.ini PostgreSQL Setup 123)  
 echo "status:$?,value:$GLOBAL_FIELD_VALUE" 

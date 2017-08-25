@@ -1,0 +1,7 @@
+# Example driver definitions
+
+# Driver from the postgresql-odbc package
+# Setup from the unixODBC package
+[PostgreSQL]
+Setup = 123
+Setup = 123
